@@ -336,21 +336,24 @@ var ingredientItemizer = function(string) {
 var makeRandomPizza = function() {
   var pizza = "";
 
-  var numberOfMeats = Math.floor((Math.random() * 4));
-  var numberOfNonMeats = Math.floor((Math.random() * 3));
-  var numberOfCheeses = Math.floor((Math.random() * 2));
+    var numberOfIngred = Math.floor((Math.random() * 4));
+//  var numberOfMeats = Math.floor((Math.random() * 4));
+//  var numberOfNonMeats = Math.floor((Math.random() * 3));
+//  var numberOfCheeses = Math.floor((Math.random() * 2));
 
-  for (var i = 0; i < numberOfMeats; i++) {
+  for (var i = 0; i < numberOfIngred; i++) {
     pizza = pizza + ingredientItemizer(selectRandomMeat());
-  }
-
-  for (var j = 0; j < numberOfNonMeats; j++) {
     pizza = pizza + ingredientItemizer(selectRandomNonMeat());
-  }
-
-  for (var k = 0; k < numberOfCheeses; k++) {
     pizza = pizza + ingredientItemizer(selectRandomCheese());
   }
+
+//  for (var j = 0; j < numberOfNonMeats; j++) {
+//    pizza = pizza + ingredientItemizer(selectRandomNonMeat());
+//  }
+
+//  for (var k = 0; k < numberOfCheeses; k++) {
+//    pizza = pizza + ingredientItemizer(selectRandomCheese());
+//  }
 
   pizza = pizza + ingredientItemizer(selectRandomSauce());
   pizza = pizza + ingredientItemizer(selectRandomCrust());
