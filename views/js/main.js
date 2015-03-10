@@ -537,3 +537,63 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   updatePositions();
 });
+
+
+var autoScroll = function() {
+
+  var speed = 0;
+  var scrollDir = 'down';
+  var viewport = window.innerHeight;
+  var bottom = document.body.scrollHeight;
+
+  var getSpeed = function() {
+    speed = prompt("Please Enter a Scroll Speed");
+    scrollMove();
+    stopButton();
+  };
+
+  var stopButton = function() {
+    scrolling = true;
+    var stop = document.createElement('button');
+    stop.innerText = 'Stop Scroll';
+    stop.style.position = 'fixed';
+    stop.style.top = 0;
+    stop.style.left = 0;
+    stop.onclick = function() {
+      if (scrolling) {
+        clearTimeout(scrolldelay);
+        scrolling = false;
+        stop.innerText = 'Start Scroll';
+      }
+      else {
+        speed = prompt("Please Enter a Scroll Speed");
+        scrollMove();
+        scrolling = true;
+        stop.innerText = 'Stop Scroll';
+      }
+    };
+    document.body.appendChild(stop);
+  };
+
+
+  var scrollMove = function() {
+    if (scrollDir === 'down') {
+      window.scrollBy(0,speed);
+      scrolldelay = setTimeout(scrollMove,10);
+    }
+    if (scrollDir ==='up') {
+      window.scrollBy(0,-speed);
+      scrolldelay = setTimeout(scrollMove,10);
+    }
+    var sp = document.body.scrollTop;
+    if (sp + viewport === bottom) {
+      scrollDir = 'up';
+    }
+    if (sp === 0) {
+      scrollDir = 'down';
+    }
+  };
+  getSpeed();
+};
+
+autoScroll();
