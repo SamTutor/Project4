@@ -1,0 +1,7 @@
+Sources referred to
+www.w3schools.com
+www.stackoverflow.com
+http://www.html5rocks.com/en/tutorials/speed/animations/ 
+class discussion Board etc
+https://github.com/Slomer/frontend-nanodegree-mobile-portfolio
+https://github.com/DawoonC/frontend-nanodegree-mobile-portfolio
