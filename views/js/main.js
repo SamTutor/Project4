@@ -18,6 +18,7 @@ cameron *at* udacity *dot* com
 
 // As you may have realized, this website randomly generates pizzas.
 // Here are arrays of all possible pizza ingredients.
+
 var pizzaIngredients = {};
 pizzaIngredients.meats = [
   "Pepperoni",
@@ -141,6 +142,7 @@ pizzaIngredients.crusts = [
   "Flatbread Crust",
   "Stuffed Crust"
 ];
+
 
 // Name generator pulled from http://saturdaykid.com/usernames/generator.html
 // Capitalizes first letter of each word
@@ -336,24 +338,21 @@ var ingredientItemizer = function(string) {
 var makeRandomPizza = function() {
   var pizza = "";
 
-    var numberOfIngred = Math.floor((Math.random() * 4));
-//  var numberOfMeats = Math.floor((Math.random() * 4));
-//  var numberOfNonMeats = Math.floor((Math.random() * 3));
-//  var numberOfCheeses = Math.floor((Math.random() * 2));
+    var numberOfMeats = Math.floor((Math.random() * 4));
+  var numberOfNonMeats = Math.floor((Math.random() * 3));
+  var numberOfCheeses = Math.floor((Math.random() * 2));
 
-  for (var i = 0; i < numberOfIngred; i++) {
+  for (var i = 0; i < numberOfMeats; i++) {
     pizza = pizza + ingredientItemizer(selectRandomMeat());
-    pizza = pizza + ingredientItemizer(selectRandomNonMeat());
-    pizza = pizza + ingredientItemizer(selectRandomCheese());
   }
 
-//  for (var j = 0; j < numberOfNonMeats; j++) {
-//    pizza = pizza + ingredientItemizer(selectRandomNonMeat());
-//  }
+  for (var i = 0; i < numberOfNonMeats; i++) {
+    pizza = pizza + ingredientItemizer(selectRandomNonMeat());
+  }
 
-//  for (var k = 0; k < numberOfCheeses; k++) {
-//    pizza = pizza + ingredientItemizer(selectRandomCheese());
-//  }
+  for (var i = 0; i < numberOfCheeses; i++) {
+    pizza = pizza + ingredientItemizer(selectRandomCheese());
+  }
 
   pizza = pizza + ingredientItemizer(selectRandomSauce());
   pizza = pizza + ingredientItemizer(selectRandomCrust());
@@ -432,14 +431,15 @@ var resizePizzas = function(size) {
 
     // TODO: change to 3 sizes? no more xl?
     // Changes the slider value to a percent width
+    console.log("size", size);
     function sizeSwitcher (size) {
-      switch(size) {
+       switch(size) {
         case "1":
-          return "25%";
+          return 0.25;
         case "2":
-          return "33.33%";
+          return 0.3333;
         case "3":
-          return "50%";
+          return 0.5;
         default:
           console.log("bug in sizeSwitcher");
       }
@@ -453,10 +453,10 @@ var resizePizzas = function(size) {
 
   // Iterates through pizza elements on the page and changes their widths
   function changePizzaSizes(size) {
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
+    var dx = determineDx(document.getElementsByClassName("randomPizzaContainer")[0], size);
+    var newwidth = (document.getElementsByClassName("randomPizzaContainer")[0].offsetWidth + dx) + 'px';
+    for (var i = 0; i < document.getElementsByClassName("randomPizzaContainer").length; i++) {
+      document.getElementsByClassName("randomPizzaContainer")[i].style.width = newwidth;
     }
   }
 
@@ -472,9 +472,9 @@ var resizePizzas = function(size) {
 window.performance.mark("mark_start_generating"); // collect timing data
 
 // This for-loop actually creates and appends all of the pizzas when the page loads
-for (var i = 2; i < 100; i++) {
-  var pizzasDiv = document.getElementById("randomPizzas");
-  pizzasDiv.appendChild(pizzaElementGenerator(i));
+var pizzasDiv = document.getElementById("randomPizzas"); 
+	for (var i = 2; i < 100; i++) {
+  		pizzasDiv.appendChild(pizzaElementGenerator(i));
 }
 
 // User Timing API again. These measurements tell you how long it took to generate the initial pizzas
@@ -498,16 +498,30 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 }
 
 // The following code for sliding background pizzas was pulled from Ilya's demo found at:
-// https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
+// http://www.html5rocks.com/en/tutorials/speed/animations/
+
+lastScroll = 0,
+tick = false;
+
+function onScrollTick (){
+	lastScroll = window.scrollY
+		if(!tick) {
+		requestAnimationFrame(updatePositions);
+	}
+	tick = true;
+	}
+
 
 // Moves the sliding background pizzas based on scroll position
 function updatePositions() {
   frame++;
+  tick=false;
   window.performance.mark("mark_start_frame");
-
-  var items = document.querySelectorAll('.mover');
+  var items = document.getElementsByClassName('mover');	  
   for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
+    var phase = Math.sin((lastScroll / 1250) + (i % 5));
+    //items[i].style.transform = 'translate3d(' + ((i % 8) * 256 + 100 * phase) + 'px, 0px, 0px)';
+    //items[i].style.transform = 'translateX(' + (100 * phase) + 'px)';  
     items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
   }
 
@@ -521,8 +535,9 @@ function updatePositions() {
   }
 }
 
-// runs updatePositions on scroll
-window.addEventListener('scroll', updatePositions);
+
+// runs onScroll on scroll to get only the latest scroll
+window.addEventListener('scroll', onScrollTick, false);
 
 // Generates the sliding pizzas when the page loads.
 document.addEventListener('DOMContentLoaded', function() {
@@ -542,61 +557,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-var autoScroll = function() {
-
-  var speed = 0;
-  var scrollDir = 'down';
-  var viewport = window.innerHeight;
-  var bottom = document.body.scrollHeight;
-
-  var getSpeed = function() {
-    speed = prompt("Please Enter a Scroll Speed");
-    scrollMove();
-    stopButton();
-  };
-
-  var stopButton = function() {
-    scrolling = true;
-    var stop = document.createElement('button');
-    stop.innerText = 'Stop Scroll';
-    stop.style.position = 'fixed';
-    stop.style.top = 0;
-    stop.style.left = 0;
-    stop.onclick = function() {
-      if (scrolling) {
-        clearTimeout(scrolldelay);
-        scrolling = false;
-        stop.innerText = 'Start Scroll';
-      }
-      else {
-        speed = prompt("Please Enter a Scroll Speed");
-        scrollMove();
-        scrolling = true;
-        stop.innerText = 'Stop Scroll';
-      }
-    };
-    document.body.appendChild(stop);
-  };
-
-
-  var scrollMove = function() {
-    if (scrollDir === 'down') {
-      window.scrollBy(0,speed);
-      scrolldelay = setTimeout(scrollMove,10);
-    }
-    if (scrollDir ==='up') {
-      window.scrollBy(0,-speed);
-      scrolldelay = setTimeout(scrollMove,10);
-    }
-    var sp = document.body.scrollTop;
-    if (sp + viewport === bottom) {
-      scrollDir = 'up';
-    }
-    if (sp === 0) {
-      scrollDir = 'down';
-    }
-  };
-  getSpeed();
-};
-
-autoScroll();
